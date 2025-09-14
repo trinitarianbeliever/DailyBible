@@ -1,114 +1,200 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Array containing all the data for multiple pages (will be loaded from JSON)
+let allVerses = [];
+
+const tableBody = document.getElementById('verseTableBody');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const pageCounter = document.getElementById('pageCounter');
+const chapterInput = document.getElementById('chapterInput');
+const jumpBtn = document.getElementById('jumpBtn');
+const verseSearchInput = document.getElementById('verseSearchInput');
+const verseSearchBtn = document.getElementById('verseSearchBtn');
+const searchMessage = document.getElementById('searchMessage');
+let currentPage = 0;
+
+/**
+ * Fetches the verse data from the JSON file and initializes the application.
+ */
+async function initialize() {
+    try {
+        const response = await fetch('data.json');
+        allVerses = await response.json();
+        renderTable(currentPage);
+        updateButtons();
+    } catch (error) {
+        console.error('Error fetching the verse data:', error);
+    }
+}
+
+/**
+ * Clears all highlights from the table cells.
+ */
+function clearHighlights() {
+    const cells = tableBody.querySelectorAll('td');
+    cells.forEach(cell => {
+        cell.classList.remove('highlighted-verse');
+    });
+}
+
+/**
+ * Renders the table with the verses for the current page.
+ * @param {number} pageIndex - The index of the page to display.
+ */
+function renderTable(pageIndex) {
+    // Clear existing table content and any previous highlights
+    tableBody.innerHTML = '';
+    clearHighlights();
     
-    // Define other variables as before
-    const versesPerPage = 21;
-    let currentPage = 0;
-    let filteredVerses = [];
+    // Get the verses for the current page
+    const verses = allVerses[pageIndex];
 
-    const verseContainer = document.getElementById('verse-container');
-    const prevButton = document.getElementById('prev-button');
-    const nextButton = document.getElementById('next-button');
-    const currentPageInfo = document.getElementById('current-page-info');
-    const totalPagesInfo = document.getElementById('total-pages-info');
-    const searchInput = document.getElementById('search-input');
-    const clearSearchButton = document.getElementById('clear-search-button');
-    const pageInput = document.getElementById('page-input');
-    const goButton = document.getElementById('go-button');
+    // Build and append new rows
+    verses.forEach(rowData => {
+        const row = document.createElement('tr');
+        rowData.forEach(cellData => {
+            const cell = document.createElement('td');
+            cell.className = 'w-[calc(100%/6)] px-2 py-2 border-b border-r border-[rgb(43,43,42)] break-words';
+            cell.textContent = cellData;
+            row.appendChild(cell);
+        });
+        tableBody.appendChild(row);
+    });
+    updatePageCounter();
+}
+
+/**
+ * Highlights the cell containing the search term.
+ * @param {string} searchTerm - The term to search for.
+ */
+function highlightVerse(searchTerm) {
+    const cells = tableBody.querySelectorAll('td');
+    cells.forEach(cell => {
+        if (cell.textContent.toLowerCase() === searchTerm.toLowerCase()) {
+            cell.classList.add('highlighted-verse');
+        }
+    });
+}
+
+
+/**
+ * Updates the state of the navigation buttons.
+ * Disables 'Previous' on the first page and 'Next' on the last page.
+ */
+function updateButtons() {
+    prevBtn.disabled = (currentPage === 0);
+    nextBtn.disabled = (currentPage === allVerses.length - 1);
     
-    // Asynchronous function to load the verses from the JSON file
-    async function loadVerses() {
-        try {
-            const response = await fetch('./data.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+    // Apply Tailwind classes for disabled state
+    if (prevBtn.disabled) {
+        prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+        prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+    if (nextBtn.disabled) {
+        nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+        nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+}
+
+/**
+ * Updates the page counter text.
+ */
+function updatePageCounter() {
+    pageCounter.textContent = `CHAPTER ${currentPage + 1} OF ${allVerses.length}`;
+}
+
+/**
+ * Handles jumping to a specific chapter number.
+ */
+function handleJump() {
+    const chapterNumber = parseInt(chapterInput.value, 10);
+    const maxChapters = allVerses.length;
+    
+    if (chapterNumber >= 1 && chapterNumber <= maxChapters) {
+        currentPage = chapterNumber - 1;
+        renderTable(currentPage);
+        updateButtons();
+    } else {
+        // Optionally, provide user feedback for invalid input
+        // For now, we'll just log an error
+        console.error(`Invalid chapter number. Please enter a number between 1 and ${maxChapters}.`);
+    }
+}
+
+/**
+ * Handles searching for a specific verse.
+ */
+function handleSearch() {
+    const searchTerm = verseSearchInput.value.trim();
+    clearHighlights();
+    searchMessage.classList.add('hidden');
+
+    if (searchTerm === "") {
+        return;
+    }
+
+    for (let i = 0; i < allVerses.length; i++) {
+        const page = allVerses[i];
+        for (let j = 0; j < page.length; j++) {
+            for (let k = 0; k < page[j].length; k++) {
+                if (page[j][k].toLowerCase() === searchTerm.toLowerCase()) {
+                    currentPage = i;
+                    renderTable(currentPage);
+                    highlightVerse(searchTerm);
+                    updateButtons();
+                    return;
+                }
             }
-            const allVerses = await response.json();
-            
-            // Now that you have the data, initialize the application
-            filteredVerses = allVerses;
-            renderVerses(currentPage, filteredVerses);
-            
-            // Re-define the filterAndRender function to use the loaded data
-            function filterAndRender() {
-                const searchTerm = searchInput.value.toLowerCase().trim();
-                
-                if (searchTerm === "") {
-                    filteredVerses = allVerses;
-                } else {
-                    filteredVerses = allVerses.filter(verse => verse.toLowerCase() === searchTerm);
-                }
-                
-                currentPage = 0;
-                renderVerses(currentPage, filteredVerses);
-            }
-            
-            // Add all your event listeners here, inside the async function,
-            // so they are attached only after the data has been loaded.
-            nextButton.addEventListener('click', () => {
-                const totalPages = Math.ceil(filteredVerses.length / versesPerPage);
-                if (currentPage < totalPages - 1) {
-                    currentPage++;
-                    renderVerses(currentPage, filteredVerses);
-                }
-            });
-
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 0) {
-                    currentPage--;
-                    renderVerses(currentPage, filteredVerses);
-                }
-            });
-
-            searchInput.addEventListener('keyup', filterAndRender);
-            
-            clearSearchButton.addEventListener('click', () => {
-                searchInput.value = '';
-                filterAndRender();
-            });
-
-            goButton.addEventListener('click', () => {
-                const pageNumber = parseInt(pageInput.value, 10);
-                const totalPages = Math.ceil(filteredVerses.length / versesPerPage);
-
-                if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPages) {
-                    currentPage = pageNumber - 1;
-                    renderVerses(currentPage, filteredVerses);
-                } else {
-                    console.log('Invalid page number. Please enter a number between 1 and ' + totalPages);
-                }
-                pageInput.value = '';
-            });
-
-        } catch (error) {
-            console.error('Failed to load verses:', error);
-            // Optionally, display an error message on the page
-            verseContainer.innerHTML = '<p class="text-red-500">Failed to load verses. Please check the data file.</p>';
         }
     }
-    
-    // The renderVerses function remains the same.
-    function renderVerses(page, verses) {
-        const totalPages = Math.ceil(verses.length / versesPerPage);
-        verseContainer.innerHTML = '';
-        const startIndex = page * versesPerPage;
-        const endIndex = startIndex + versesPerPage;
-        const versesToDisplay = verses.slice(startIndex, endIndex);
 
-        versesToDisplay.forEach(verse => {
-            const verseDiv = document.createElement('div');
-            verseDiv.className = "flex items-center justify-center text-center text-[#FFFFFF] text-base sm:text-lg p-4 cursor-pointer hover:bg-gray-800 transition-colors duration-200 border border-[#555555] rounded-md";
-            verseDiv.textContent = verse;
-            verseContainer.appendChild(verseDiv);
-        });
+    searchMessage.classList.remove('hidden');
+}
 
-        currentPageInfo.textContent = page + 1;
-        totalPagesInfo.textContent = totalPages > 0 ? totalPages : 1;
-        prevButton.disabled = page === 0 || totalPages === 0;
-        nextButton.disabled = page >= totalPages - 1 || totalPages === 0;
-        prevButton.style.opacity = prevButton.disabled ? '0.5' : '1';
-        nextButton.style.opacity = nextButton.disabled ? '0.5' : '1';
+
+// Event listeners for the navigation buttons
+nextBtn.addEventListener('click', () => {
+    if (currentPage < allVerses.length - 1) {
+        currentPage++;
+        renderTable(currentPage);
+        updateButtons();
     }
-
-    // Call the async function to start the process
-    loadVerses();
 });
+
+prevBtn.addEventListener('click', () => {
+    if (currentPage > 0) {
+        currentPage--;
+        renderTable(currentPage);
+        updateButtons();
+    }
+});
+
+// Event listener for the jump button
+jumpBtn.addEventListener('click', handleJump);
+chapterInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        handleJump();
+    }
+});
+
+// Event listener for the verse search button
+verseSearchBtn.addEventListener('click', handleSearch);
+verseSearchInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        handleSearch();
+    }
+});
+
+// Event listener for keyboard navigation
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+        prevBtn.click();
+    } else if (event.key === 'ArrowRight') {
+        nextBtn.click();
+    }
+});
+
+// Initial render
+initialize();
+

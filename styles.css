@@ -1,14 +1,26 @@
 body {
-    font-family: -apple-system,BlinkMacSystemFont,"Roboto","Segoe UI","Helvetica Neue","Lucida Grande",Arial,sans-serif;
     background-color: #191919;
+    font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 14px;
+    color: rgb(240, 239, 237);
+    line-height: 1.5;
 }
-/* CSS to remove up/down arrows from number input */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
+
+/* Hide the up and down arrows on number input for WebKit browsers */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-input[type="number"] {
+
+/* Hide the up and down arrows for Firefox */
+input[type=number] {
     -moz-appearance: textfield;
+}
+
+.highlighted-verse {
+    background-color: rgb(232, 232, 232);
+    color: black;
+    font-weight: bold;
 }
 

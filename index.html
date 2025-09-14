@@ -3,61 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bible Verse Navigator</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;600&display=swap" rel="stylesheet">
+    <title>Daily Bible Verses</title>
+    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Link to external CSS file -->
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="p-4">
-
-    <!-- Main Container -->
-    <div class="max-w-4xl mx-auto p-6 bg-[#191919]">
-
-        <!-- Search Input and Button -->
-        <div class="flex items-center mb-8 space-x-2">
-            <input type="text" id="search-input" placeholder="Search for a verse..." class="w-full p-3 rounded-md text-[#FFFFFF] bg-[#191919] border-2 border-[#555555] focus:outline-none focus:border-blue-500 transition-colors duration-200" />
-            <button id="clear-search-button" class="px-4 py-3 bg-[#191919] text-[#FFFFFF] rounded-md font-semibold shadow-md hover:bg-[#444444] transition-colors duration-200 border-2 border-[#555555]">
-                Clear
-            </button>
-        </div>
-
-        <!-- Verse Container Grid -->
-        <main id="verse-container" class="grid grid-cols-3 gap-4 mb-8">
-            <!-- Verses will be dynamically added here by JavaScript -->
-        </main>
-
-        <!-- Navigation and Page Info -->
-        <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
-            <div class="text-[#FFFFFF] text-sm font-medium">
-                Page <span id="current-page-info">1</span> of <span id="total-pages-info">1</span>
-            </div>
-            <div class="flex space-x-4">
-                <button id="prev-button" class="px-8 py-2 bg-[#191919] text-[#FFFFFF] rounded-full font-semibold shadow-md hover:bg-[#444444] transition-colors duration-200 border-2 border-[#555555]">
-                    Previous
-                </button>
-                <button id="next-button" class="px-8 py-2 bg-[#191919] text-[#FFFFFF] rounded-full font-semibold shadow-md hover:bg-[#444444] transition-colors duration-200 border-2 border-[#555555]">
-                    Next
-                </button>
-            </div>
-        </div>
-        
-        <!-- Horizontal line -->
-        <div class="w-full h-px bg-[#555555] my-8"></div>
-
-        <!-- Go to Page Footer -->
-        <div class="flex items-center mt-8 space-x-2">
-            <input type="number" id="page-input" placeholder="Go to page" class="w-full p-3 rounded-md text-[#FFFFFF] bg-[#191919] border-2 border-[#555555] focus:outline-none focus:border-blue-500 transition-colors duration-200" />
-            <button id="go-button" class="px-4 py-3 bg-[#191919] text-[#FFFFFF] rounded-md font-semibold shadow-md hover:bg-[#444444] transition-colors duration-200 border-2 border-[#555555]">
-                Go
-            </button>
-        </div>
-
+<body class="p-8">
+    <!-- Verse Search input and button -->
+    <div class="flex items-center justify-center mb-4 mx-auto max-w-5xl w-full">
+        <input type="text" id="verseSearchInput" placeholder="Search a verse..." class="w-full px-4 py-2 bg-[rgb(43,43,42)] text-white rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-[rgb(232,232,232)] placeholder-gray-400">
+        <button id="verseSearchBtn" class="bg-[rgb(43,43,42)] text-[rgb(232,232,232)] w-28 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 ml-2">
+            Search
+        </button>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Jump to Chapter input and button -->
+    <div class="flex items-center justify-center mb-8 mx-auto max-w-5xl w-full">
+        <input type="number" id="chapterInput" placeholder="Jump to..." class="w-full px-4 py-2 bg-[rgb(43,43,42)] text-white rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-[rgb(232,232,232)] placeholder-gray-400">
+        <button id="jumpBtn" class="bg-[rgb(43,43,42)] text-[rgb(232,232,232)] w-28 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 ml-2">
+            Go
+        </button>
+    </div>
 
+    <!-- Search Result Message -->
+    <div id="searchMessage" class="text-center text-red-500 mb-4 hidden">Verse not found.</div>
+
+    <!-- Main Table Container -->
+    <div id="mainTableContainer" class="overflow-x-auto mx-auto max-w-5xl">
+        <table class="min-w-full border border-[rgb(43,43,42)] rounded-lg table-fixed">
+            <thead class="bg-[#191919]">
+                <tr>
+                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider rounded-tl-lg border-b border-r border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD I</th>
+                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider border-b border-r border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD II</th>
+                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider border-b border-r border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD III</th>
+                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider border-b border-r border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD IV</th>
+                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider border-b border-r border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD V</th>
+                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider rounded-tr-lg border-b border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD VI</th>
+                </tr>
+            </thead>
+            <tbody id="verseTableBody" class="bg-[#191919]">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Navigation and Page Counter -->
+    <div id="navigationContainer" class="flex items-center justify-between mt-8 max-w-5xl mx-auto">
+        <button id="prevBtn" class="bg-[rgb(43,43,42)] text-[rgb(232,232,232)] px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+            Previous
+        </button>
+        
+        <span id="pageCounter" class="text-sm opacity-70"></span>
+
+        <button id="nextBtn" class="bg-[rgb(43,43,42)] text-[rgb(232,232,232)] px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+            Next
+        </button>
+    </div>
+
+    <!-- Link to external JavaScript file -->
+    <script src="script.js"></script>
 </body>
 </html>
 
