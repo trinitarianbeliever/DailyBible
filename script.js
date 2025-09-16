@@ -53,7 +53,8 @@ function renderTable(pageIndex) {
         const row = document.createElement('tr');
         rowData.forEach(cellData => {
             const cell = document.createElement('td');
-            cell.className = 'w-[calc(100%/6)] px-2 py-2 border-b border-r border-[rgb(43,43,42)] break-words';
+            // Use the new CSS class for styling
+            cell.className = 'verse-cell';
             cell.textContent = cellData;
             row.appendChild(cell);
         });
@@ -81,20 +82,9 @@ function highlightVerse(searchTerm) {
  * Disables 'Previous' on the first page and 'Next' on the last page.
  */
 function updateButtons() {
+    // The disabled property handles the styling via CSS, no need to add/remove classes
     prevBtn.disabled = (currentPage === 0);
     nextBtn.disabled = (currentPage === allVerses.length - 1);
-    
-    // Apply Tailwind classes for disabled state
-    if (prevBtn.disabled) {
-        prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
-    } else {
-        prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-    }
-    if (nextBtn.disabled) {
-        nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
-    } else {
-        nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-    }
 }
 
 /**

@@ -4,60 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Bible Verses</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Link to external CSS file -->
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="p-8">
-    <!-- Verse Search input and button -->
-    <div class="flex items-center justify-center mb-4 mx-auto max-w-5xl w-full">
-        <input type="text" id="verseSearchInput" placeholder="Search a verse..." class="w-full px-4 py-2 bg-[rgb(43,43,42)] text-white rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-[rgb(232,232,232)] placeholder-gray-400">
-        <button id="verseSearchBtn" class="bg-[rgb(43,43,42)] text-[rgb(232,232,232)] w-28 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 ml-2">
-            Search
-        </button>
-    </div>
+<body>
+    <div class="main-container">
+        <!-- Verse Search input and button -->
+        <div class="input-group search-group">
+            <input type="text" id="verseSearchInput" placeholder="Search a verse..." class="search-input">
+            <button id="verseSearchBtn" class="search-button">
+                Search
+            </button>
+        </div>
 
-    <!-- Jump to Chapter input and button -->
-    <div class="flex items-center justify-center mb-8 mx-auto max-w-5xl w-full">
-        <input type="number" id="chapterInput" placeholder="Jump to..." class="w-full px-4 py-2 bg-[rgb(43,43,42)] text-white rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-[rgb(232,232,232)] placeholder-gray-400">
-        <button id="jumpBtn" class="bg-[rgb(43,43,42)] text-[rgb(232,232,232)] w-28 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 ml-2">
-            Go
-        </button>
-    </div>
+        <!-- Jump to Chapter input and button -->
+        <div class="input-group jump-group">
+            <input type="number" id="chapterInput" placeholder="Jump to..." class="search-input">
+            <button id="jumpBtn" class="search-button">
+                Go
+            </button>
+        </div>
 
-    <!-- Search Result Message -->
-    <div id="searchMessage" class="text-center text-red-500 mb-4 hidden">Verse not found.</div>
+        <!-- Search Result Message -->
+        <div id="searchMessage" class="search-message hidden">Verse not found.</div>
 
-    <!-- Main Table Container -->
-    <div id="mainTableContainer" class="overflow-x-auto mx-auto max-w-5xl">
-        <table class="min-w-full border border-[rgb(43,43,42)] rounded-lg table-fixed">
-            <thead class="bg-[#191919]">
-                <tr>
-                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider rounded-tl-lg border-b border-r border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD I</th>
-                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider border-b border-r border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD II</th>
-                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider border-b border-r border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD III</th>
-                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider border-b border-r border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD IV</th>
-                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider border-b border-r border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD V</th>
-                    <th scope="col" class="w-[calc(100%/6)] px-2 py-2 text-left text-sm font-bold uppercase tracking-wider rounded-tr-lg border-b border-[rgb(43,43,42)] text-[rgb(232,232,232)]">WORD VI</th>
-                </tr>
-            </thead>
-            <tbody id="verseTableBody" class="bg-[#191919]">
-            </tbody>
-        </table>
-    </div>
+        <!-- Main Table Container -->
+        <div id="mainTableContainer" class="table-container">
+            <table class="verse-table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="table-header">WORD I</th>
+                        <th scope="col" class="table-header">WORD II</th>
+                        <th scope="col" class="table-header">WORD III</th>
+                        <th scope="col" class="table-header">WORD IV</th>
+                        <th scope="col" class="table-header">WORD V</th>
+                        <th scope="col" class="table-header">WORD VI</th>
+                    </tr>
+                </thead>
+                <tbody id="verseTableBody" class="table-body">
+                </tbody>
+            </table>
+        </div>
 
-    <!-- Navigation and Page Counter -->
-    <div id="navigationContainer" class="flex items-center justify-between mt-8 max-w-5xl mx-auto">
-        <button id="prevBtn" class="bg-[rgb(43,43,42)] text-[rgb(232,232,232)] px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200">
-            Previous
-        </button>
-        
-        <span id="pageCounter" class="text-sm opacity-70"></span>
+        <!-- Navigation and Page Counter -->
+        <div id="navigationContainer" class="navigation-container">
+            <button id="prevBtn" class="nav-button">
+                Previous
+            </button>
+            
+            <span id="pageCounter" class="page-counter"></span>
 
-        <button id="nextBtn" class="bg-[rgb(43,43,42)] text-[rgb(232,232,232)] px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200">
-            Next
-        </button>
+            <button id="nextBtn" class="nav-button">
+                Next
+            </button>
+        </div>
     </div>
 
     <!-- Link to external JavaScript file -->
