@@ -169,3 +169,9 @@ input[type=number] {
     opacity: 0.7;
 }
 
+
+
+.search-message.success {
+    color: rgb(74, 222, 128);
+}
+

@@ -118,28 +118,44 @@ function handleJump() {
 function handleSearch() {
     const searchTerm = verseSearchInput.value.trim();
     clearHighlights();
-    searchMessage.classList.add('hidden');
+    searchMessage.classList.add('hidden'); // Hide the message initially
 
     if (searchTerm === "") {
         return;
     }
 
+    let verseFound = false;
+
+    // Iterate through all chapters to find the verse
     for (let i = 0; i < allVerses.length; i++) {
         const page = allVerses[i];
         for (let j = 0; j < page.length; j++) {
             for (let k = 0; k < page[j].length; k++) {
                 if (page[j][k].toLowerCase() === searchTerm.toLowerCase()) {
+                    // Verse found, set the current page and render the table
                     currentPage = i;
                     renderTable(currentPage);
                     highlightVerse(searchTerm);
                     updateButtons();
-                    return;
+                    
+                    // Update and show the "found" message
+                    searchMessage.textContent = 'Verse found.';
+                    searchMessage.style.color = 'rgb(74, 222, 128)'; // A green color for success
+                    searchMessage.classList.remove('hidden');
+                    
+                    verseFound = true;
+                    return; // Exit the function after finding the verse
                 }
             }
         }
     }
 
-    searchMessage.classList.remove('hidden');
+    // If the loop completes and the verse was not found
+    if (!verseFound) {
+        searchMessage.textContent = 'Verse not found.';
+        searchMessage.style.color = 'rgb(239, 68, 68)'; // The original red color for error
+        searchMessage.classList.remove('hidden');
+    }
 }
 
 
@@ -187,4 +203,3 @@ document.addEventListener('keydown', (event) => {
 
 // Initial render
 initialize();
-
