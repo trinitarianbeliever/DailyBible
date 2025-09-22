@@ -9,6 +9,7 @@ const chapterInput = document.getElementById('chapterInput');
 const jumpBtn = document.getElementById('jumpBtn');
 const verseSearchInput = document.getElementById('verseSearchInput');
 const verseSearchBtn = document.getElementById('verseSearchBtn');
+const randomBtn = document.getElementById('randomBtn');
 const searchMessage = document.getElementById('searchMessage');
 let currentPage = 0;
 
@@ -41,10 +42,14 @@ function clearHighlights() {
  * @param {number} pageIndex - The index of the page to display.
  */
 function renderTable(pageIndex) {
+    // Show the table and navigation containers
+    document.getElementById('mainTableContainer').classList.remove('hidden');
+    document.getElementById('navigationContainer').classList.remove('hidden');
+
     // Clear existing table content and any previous highlights
     tableBody.innerHTML = '';
     clearHighlights();
-    
+
     // Get the verses for the current page
     const verses = allVerses[pageIndex];
 
@@ -55,27 +60,13 @@ function renderTable(pageIndex) {
             const cell = document.createElement('td');
             // Use the new CSS class for styling
             cell.className = 'verse-cell';
-            cell.textContent = cellData;
+            cell.textContent = cellData; // Using textContent is a key security measure
             row.appendChild(cell);
         });
         tableBody.appendChild(row);
     });
     updatePageCounter();
 }
-
-/**
- * Highlights the cell containing the search term.
- * @param {string} searchTerm - The term to search for.
- */
-function highlightVerse(searchTerm) {
-    const cells = tableBody.querySelectorAll('td');
-    cells.forEach(cell => {
-        if (cell.textContent.toLowerCase() === searchTerm.toLowerCase()) {
-            cell.classList.add('highlighted-verse');
-        }
-    });
-}
-
 
 /**
  * Updates the state of the navigation buttons.
@@ -95,20 +86,47 @@ function updatePageCounter() {
 }
 
 /**
+ * Sanitizes user input to prevent XSS attacks.
+ * It creates a temporary div and uses textContent to escape any HTML tags.
+ * @param {string} input - The raw user input.
+ * @returns {string} The sanitized input.
+ */
+function sanitizeInput(input) {
+    const div = document.createElement('div');
+    div.textContent = input;
+    return div.innerHTML;
+}
+
+/**
+ * Highlights the cell containing the search term.
+ * @param {string} searchTerm - The term to search for.
+ */
+function highlightVerse(searchTerm) {
+    const cells = tableBody.querySelectorAll('td');
+    cells.forEach(cell => {
+        // We use textContent here because we are only reading the text value.
+        if (cell.textContent.toLowerCase() === searchTerm.toLowerCase()) {
+            cell.classList.add('highlighted-verse');
+        }
+    });
+}
+
+/**
  * Handles jumping to a specific chapter number.
  */
 function handleJump() {
     const chapterNumber = parseInt(chapterInput.value, 10);
     const maxChapters = allVerses.length;
-    
+
     if (chapterNumber >= 1 && chapterNumber <= maxChapters) {
         currentPage = chapterNumber - 1;
         renderTable(currentPage);
         updateButtons();
     } else {
-        // Optionally, provide user feedback for invalid input
-        // For now, we'll just log an error
-        console.error(`Invalid chapter number. Please enter a number between 1 and ${maxChapters}.`);
+        // Display a sanitized error message to the user.
+        searchMessage.textContent = 'Invalid chapter number. Please enter a number between 1 and ' + maxChapters + '.';
+        searchMessage.style.color = 'rgb(239, 68, 68)';
+        searchMessage.classList.remove('hidden');
     }
 }
 
@@ -116,7 +134,8 @@ function handleJump() {
  * Handles searching for a specific verse.
  */
 function handleSearch() {
-    const searchTerm = verseSearchInput.value.trim();
+    // Sanitize the input before using it
+    const searchTerm = sanitizeInput(verseSearchInput.value.trim());
     clearHighlights();
     searchMessage.classList.add('hidden'); // Hide the message initially
 
@@ -137,12 +156,12 @@ function handleSearch() {
                     renderTable(currentPage);
                     highlightVerse(searchTerm);
                     updateButtons();
-                    
+
                     // Update and show the "found" message
                     searchMessage.textContent = 'Verse found.';
                     searchMessage.style.color = 'rgb(74, 222, 128)'; // A green color for success
                     searchMessage.classList.remove('hidden');
-                    
+
                     verseFound = true;
                     return; // Exit the function after finding the verse
                 }
@@ -156,6 +175,47 @@ function handleSearch() {
         searchMessage.style.color = 'rgb(239, 68, 68)'; // The original red color for error
         searchMessage.classList.remove('hidden');
     }
+}
+
+/**
+ * Selects and displays a random verse.
+ */
+function showRandomVerse() {
+    const flattenedVerses = allVerses.flat(2).filter(verse => verse.trim() !== "");
+    if (flattenedVerses.length === 0) {
+        // Handle case where there are no verses
+        console.error("No verses available to display.");
+        searchMessage.textContent = 'No verses available.';
+        searchMessage.style.color = 'rgb(239, 68, 68)';
+        searchMessage.classList.remove('hidden');
+        document.getElementById('mainTableContainer').classList.add('hidden');
+        document.getElementById('navigationContainer').classList.add('hidden');
+        return;
+    }
+
+    const randomIndex = Math.floor(Math.random() * flattenedVerses.length);
+    const randomVerse = flattenedVerses[randomIndex];
+
+    // Clear the existing table and highlights
+    tableBody.innerHTML = '';
+    clearHighlights();
+
+    // Create a new table row and cell for the random verse
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.className = 'verse-cell highlighted-verse'; // Apply the highlighted style
+    cell.textContent = randomVerse;
+    row.appendChild(cell);
+    tableBody.appendChild(row);
+
+    // Show the table but hide the navigation
+    document.getElementById('mainTableContainer').classList.remove('hidden');
+    document.getElementById('navigationContainer').classList.add('hidden');
+
+    // Update the search message to display the verse info
+    searchMessage.textContent = 'Your random verse:';
+    searchMessage.style.color = 'rgb(74, 222, 128)';
+    searchMessage.classList.remove('hidden');
 }
 
 
@@ -192,6 +252,9 @@ verseSearchInput.addEventListener('keydown', (event) => {
     }
 });
 
+// Event listener for the new Random button
+randomBtn.addEventListener('click', showRandomVerse);
+
 // Event listener for keyboard navigation
 document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowLeft') {
@@ -201,5 +264,6 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-// Initial render
-initialize();
+// Initial render on page load
+window.onload = initialize;
+
