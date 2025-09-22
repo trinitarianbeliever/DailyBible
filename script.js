@@ -22,6 +22,8 @@ async function initialize() {
         allVerses = await response.json();
         renderTable(currentPage);
         updateButtons();
+        // Hide the search message on initialization
+        searchMessage.classList.add('hidden');
     } catch (error) {
         console.error('Error fetching the verse data:', error);
     }
@@ -122,11 +124,6 @@ function handleJump() {
         currentPage = chapterNumber - 1;
         renderTable(currentPage);
         updateButtons();
-    } else {
-        // Display a sanitized error message to the user.
-        searchMessage.textContent = 'Invalid chapter number. Please enter a number between 1 and ' + maxChapters + '.';
-        searchMessage.style.color = 'rgb(239, 68, 68)';
-        searchMessage.classList.remove('hidden');
     }
 }
 
@@ -211,11 +208,6 @@ function showRandomVerse() {
     // Show the table but hide the navigation
     document.getElementById('mainTableContainer').classList.remove('hidden');
     document.getElementById('navigationContainer').classList.add('hidden');
-
-    // Update the search message to display the verse info
-    searchMessage.textContent = 'Your random verse:';
-    searchMessage.style.color = 'rgb(74, 222, 128)';
-    searchMessage.classList.remove('hidden');
 }
 
 
@@ -266,4 +258,3 @@ document.addEventListener('keydown', (event) => {
 
 // Initial render on page load
 window.onload = initialize;
-
