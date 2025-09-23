@@ -3,69 +3,477 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Bible Verses</title>
-    <!-- Link to external CSS file -->
-    <link rel="stylesheet" href="styles.css">
+    <title>Secure Website</title>
+    <style>
+        /* General styling for the dark theme */
+        body {
+            background-color: rgb(25, 25, 25);
+            color: #f0f0f0;
+            font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Styling for the header */
+        .header {
+            background-color: rgb(35, 35, 35);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgb(50, 50, 50);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* Styling for the navigation menu */
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Styling for the links */
+        .nav-link {
+            text-decoration: none;
+            color: #a0a0a0;
+            font-weight: 500;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .nav-link:hover,
+        .nav-link:focus {
+            color: #ffffff;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        /* Search box styling */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .search-box input {
+            background-color: rgb(50, 50, 50);
+            color: #f0f0f0;
+            border: 1px solid rgb(70, 70, 70);
+            padding: 8px 12px;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: #ffffff;
+        }
+
+        .search-box button {
+            background-color: rgb(50, 50, 50);
+            color: #f0f0f0;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .search-box button:hover {
+            background-color: rgb(70, 70, 70);
+        }
+        
+        /* Message box for search results */
+        .message-box {
+            margin-top: 2rem;
+            padding: 2rem;
+            background-color: rgb(35, 35, 35);
+            border: 1px solid rgb(50, 50, 50);
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* New styling for the table */
+        .bible-verse-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .bible-verse-table th,
+        .bible-verse-table td {
+            border: 1px solid rgb(50, 50, 50);
+            padding: 10px 10px;
+            text-align: left;
+        }
+        
+        .bible-verse-table th {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Highlight class for search results */
+        .highlight {
+            background-color: #ffffff;
+            color: #000000;
+            transition: background-color 0.5s ease-in-out;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .pagination button, .pagination input {
+            background-color: rgb(50, 50, 50);
+            color: #f0f0f0;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .pagination button:hover:not([disabled]), .pagination input:focus {
+            background-color: rgb(70, 70, 70);
+            outline: none;
+        }
+
+        .pagination button:disabled {
+            background-color: rgb(35, 35, 35);
+            color: #555;
+            cursor: not-allowed;
+        }
+
+        .chapter-indicator {
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 0 10px;
+        }
+        
+        .jump-box {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .jump-box input {
+            width: 50px;
+            text-align: center;
+            border: 1px solid rgb(50, 50, 50);
+            /* Hide the number input arrows */
+            -moz-appearance: textfield;
+        }
+
+        .jump-box input::-webkit-outer-spin-button,
+        .jump-box input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Styles for the new random verse section and message box */
+        .hidden {
+            display: none !important;
+        }
+
+        .random-verse-section {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .random-verse-box {
+            background-color: rgb(35, 35, 35);
+            padding: 2rem;
+            border-radius: 10px;
+            border: 1px solid rgb(50, 50, 50);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 1.5rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .random-verse-button {
+            background-color: rgb(50, 50, 50);
+            color: #f0f0f0;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease-in-out;
+            font-size: 1rem;
+        }
+
+        .random-verse-button:hover {
+            background-color: rgb(70, 70, 70);
+        }
+    </style>
 </head>
-
 <body>
-    <div class="main-container">
-        <!-- Verse Search input and button -->
-        <div class="input-group search-group">
-            <input type="text" id="verseSearchInput" placeholder="Search a verse..." class="search-input">
-            <button id="verseSearchBtn" class="search-button">
-                Search
-            </button>
+
+    <header class="header">
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link" id="home-link">HOME</a></li>
+                <li><a href="#" class="nav-link" id="ntv-link">RANDOM</a></li>
+            </ul>
+        </nav>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search verse...">
+            <button id="searchButton">Search</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="table-container"></div>
+        <div class="pagination">
+            <button id="prevButton">Previous Page</button>
+            <span id="chapterIndicator" class="chapter-indicator"></span>
+            <button id="nextButton">Next Page</button>
+            <div class="jump-box">
+                <input type="number" id="jumpInput" placeholder="Go" min="1" max="2">
+                <button id="jumpButton">Jump</button>
+            </div>
         </div>
 
-        <!-- Jump to Chapter input and button -->
-        <div class="input-group jump-group">
-            <input type="number" id="chapterInput" placeholder="Jump to..." class="search-input">
-            <button id="jumpBtn" class="search-button">
-                Go
-            </button>
-            <button id="randomBtn" class="search-button">
-                Random
-            </button>
+        <!-- Section for random verse and messages -->
+        <div id="random-verse-section" class="random-verse-section hidden">
+            <div id="random-verse-box" class="random-verse-box"></div>
+            <button id="random-verse-button" class="random-verse-button">Get Random Verse</button>
         </div>
-
-        <!-- Search Result Message -->
-        <div id="searchMessage" class="search-message hidden">Verse not found.</div>
-
-        <!-- Main Table Container -->
-        <div id="mainTableContainer" class="table-container">
-            <table class="verse-table">
-                <thead>
-                    <tr>
-                        <th scope="col" class="table-header">WORD I</th>
-                        <th scope="col" class="table-header">WORD II</th>
-                        <th scope="col" class="table-header">WORD III</th>
-                        <th scope="col" class="table-header">WORD IV</th>
-                        <th scope="col" class="table-header">WORD V</th>
-                        <th scope="col" class="table-header">WORD VI</th>
-                    </tr>
-                </thead>
-                <tbody id="verseTableBody" class="table-body">
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Navigation and Page Counter -->
-        <div id="navigationContainer" class="navigation-container">
-            <button id="prevBtn" class="nav-button">
-                Previous
-            </button>
-
-            <span id="pageCounter" class="page-counter"></span>
-
-            <button id="nextBtn" class="nav-button">
-                Next
-            </button>
-        </div>
+        <div id="message-box" class="message-box hidden"></div>
     </div>
 
-    <!-- Link to external JavaScript file -->
-    <script src="script.js"></script>
+    <script>
+        let verses = [];
+        const versesPerPage = 60;
+        let totalPages = 0;
+        
+        const tableContainer = document.getElementById('table-container');
+        const pagination = document.querySelector('.pagination');
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        const chapterIndicator = document.getElementById('chapterIndicator');
+        const jumpInput = document.getElementById('jumpInput');
+        const jumpButton = document.getElementById('jumpButton');
+        
+        const homeLink = document.getElementById('home-link');
+        const ntvLink = document.getElementById('ntv-link');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        
+        const randomVerseSection = document.getElementById('random-verse-section');
+        const randomVerseBox = document.getElementById('random-verse-box');
+        const randomVerseButton = document.getElementById('random-verse-button');
+        const messageBox = document.getElementById('message-box');
+
+        let currentPage = 1;
+
+        // Function to fetch data from data.json
+        async function fetchVerses() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                verses = await response.json();
+                totalPages = Math.ceil(verses.length / versesPerPage);
+                renderTable(currentPage);
+                showView('table');
+            } catch (error) {
+                console.error('Failed to load verses:', error);
+                messageBox.textContent = "Failed to load verses. Please make sure 'data.json' is in the same directory.";
+                showView('message');
+            }
+        }
+
+        function renderTable(page) {
+            clearHighlight();
+            tableContainer.innerHTML = '';
+            const start = (page - 1) * versesPerPage;
+            const end = start + versesPerPage;
+            const pageVerses = verses.slice(start, end);
+
+            let tableHTML = `
+                <table class="bible-verse-table">
+                    <thead>
+                        <tr>
+                            <th>Word I</th>
+                            <th>Word II</th>
+                            <th>Word III</th>
+                            <th>Word IV</th>
+                            <th>Word V</th>
+                            <th>Word VI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            for (let i = 0; i < pageVerses.length; i += 6) {
+                tableHTML += `<tr>`;
+                for (let j = 0; j < 6; j++) {
+                    const verseIndex = i + j;
+                    if (verseIndex < pageVerses.length) {
+                        tableHTML += `<td>${pageVerses[verseIndex]}</td>`;
+                    } else {
+                        tableHTML += `<td></td>`;
+                    }
+                }
+                tableHTML += `</tr>`;
+            }
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            tableContainer.innerHTML = tableHTML;
+            updatePagination();
+        }
+
+        function updatePagination() {
+            prevButton.disabled = currentPage === 1;
+            nextButton.disabled = currentPage === totalPages;
+            chapterIndicator.textContent = `CHAPTER ${currentPage} OF ${totalPages}`;
+            jumpInput.setAttribute('max', totalPages);
+        }
+
+        function displayRandomVerse() {
+            if (verses.length > 0) {
+                const randomIndex = Math.floor(Math.random() * verses.length);
+                randomVerseBox.textContent = verses[randomIndex];
+            } else {
+                randomVerseBox.textContent = "No verses available.";
+            }
+        }
+
+        function showView(view) {
+            tableContainer.classList.add('hidden');
+            pagination.classList.add('hidden');
+            randomVerseSection.classList.add('hidden');
+            messageBox.classList.add('hidden');
+            
+            if (view === 'table') {
+                tableContainer.classList.remove('hidden');
+                pagination.classList.remove('hidden');
+            } else if (view === 'ntv') {
+                randomVerseSection.classList.remove('hidden');
+                displayRandomVerse();
+            } else if (view === 'message') {
+                messageBox.classList.remove('hidden');
+            }
+        }
+
+        function clearHighlight() {
+            const highlightedCells = document.querySelectorAll('.highlight');
+            highlightedCells.forEach(cell => cell.classList.remove('highlight'));
+        }
+
+        // Event listeners for page navigation
+        nextButton.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable(currentPage);
+            }
+        });
+
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable(currentPage);
+            }
+        });
+
+        jumpButton.addEventListener('click', () => {
+            const jumpToPage = parseInt(jumpInput.value, 10);
+            if (!isNaN(jumpToPage) && jumpToPage >= 1 && jumpToPage <= totalPages) {
+                currentPage = jumpToPage;
+                renderTable(currentPage);
+            }
+        });
+
+        jumpInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                jumpButton.click();
+            }
+        });
+
+        // Event listener for NTV link
+        ntvLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showView('ntv');
+        });
+
+        // Event listener for HOME link
+        homeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentPage = 1;
+            renderTable(currentPage);
+            showView('table');
+        });
+
+        // Event listener for the new random verse button
+        randomVerseButton.addEventListener('click', displayRandomVerse);
+
+        // Event listener for search
+        function handleSearch() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            if (searchTerm === '') {
+                return;
+            }
+
+            // Find the index of the verse, ignoring case
+            const foundIndex = verses.findIndex(verse => verse.toLowerCase() === searchTerm);
+            
+            if (foundIndex !== -1) {
+                const pageNumber = Math.floor(foundIndex / versesPerPage) + 1;
+                currentPage = pageNumber;
+                renderTable(currentPage);
+                showView('table');
+                
+                // Find and highlight the cell using the case-insensitive search term
+                const tableCells = document.querySelectorAll('.bible-verse-table td');
+                tableCells.forEach(cell => {
+                    if (cell.textContent.toLowerCase() === searchTerm) {
+                        cell.classList.add('highlight');
+                    }
+                });
+            } else {
+                messageBox.textContent = "Verse not found.";
+                showView('message');
+            }
+        }
+        
+        searchButton.addEventListener('click', handleSearch);
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        // Initial page render
+        fetchVerses();
+    </script>
+
 </body>
 </html>
 
