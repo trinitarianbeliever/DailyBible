@@ -108,16 +108,24 @@
         /* New styling for the table */
         .bible-verse-table {
             width: 100%;
+            table-layout: fixed; /* Added for equal column widths */
             border-collapse: collapse;
             margin-top: 2rem;
             font-size: 0.9rem;
+            empty-cells: show;
         }
 
         .bible-verse-table th,
         .bible-verse-table td {
             border: 1px solid rgb(50, 50, 50);
-            padding: 10px 10px;
+            padding: 5px 10px;
             text-align: left;
+        }
+        
+        .verse-content {
+            min-height: 30px;
+            line-height: 30px;
+            display: block;
         }
         
         .bible-verse-table th {
@@ -256,7 +264,6 @@
             </div>
         </div>
 
-        <!-- Section for random verse and messages -->
         <div id="random-verse-section" class="random-verse-section hidden">
             <div id="random-verse-box" class="random-verse-box"></div>
             <button id="random-verse-button" class="random-verse-button">Get Random Verse</button>
@@ -267,6 +274,8 @@
     <script>
         let verses = [];
         const versesPerPage = 60;
+        const columns = 6;
+        const rows = 10;
         let totalPages = 0;
         
         const tableContainer = document.getElementById('table-container');
@@ -329,19 +338,19 @@
                     <tbody>
             `;
 
-            for (let i = 0; i < pageVerses.length; i += 6) {
+            for (let i = 0; i < rows; i++) {
                 tableHTML += `<tr>`;
-                for (let j = 0; j < 6; j++) {
-                    const verseIndex = i + j;
+                for (let j = 0; j < columns; j++) {
+                    const verseIndex = j * rows + i;
                     if (verseIndex < pageVerses.length) {
-                        tableHTML += `<td>${pageVerses[verseIndex]}</td>`;
+                        tableHTML += `<td><div class="verse-content">${pageVerses[verseIndex]}</div></td>`;
                     } else {
-                        tableHTML += `<td></td>`;
+                        tableHTML += `<td><div class="verse-content"></div></td>`;
                     }
                 }
                 tableHTML += `</tr>`;
             }
-
+            
             tableHTML += `
                     </tbody>
                 </table>
@@ -455,6 +464,8 @@
                 tableCells.forEach(cell => {
                     if (cell.textContent.toLowerCase() === searchTerm) {
                         cell.classList.add('highlight');
+                    } else {
+                        cell.classList.remove('highlight');
                     }
                 });
             } else {
@@ -476,4 +487,3 @@
 
 </body>
 </html>
-
